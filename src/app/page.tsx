@@ -6,6 +6,7 @@ import { DirectionalPad } from "@/components/directional-pad";
 import { DistanceDisplay } from "@/components/distance-display";
 import { DebugConsole } from "@/components/debug-console";
 import { Card } from "@/components/ui/card";
+import { VehicleNameSetup } from "@/components/vehicle-name-setup";
 
 export default function Home() {
   return (
@@ -23,6 +24,7 @@ export default function Home() {
              <DebugConsole />
           </div>
         </main>
+        <VehicleNameSetup />
       </div>
     </MqttProvider>
   );

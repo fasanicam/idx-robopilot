@@ -19,6 +19,7 @@ interface MqttContextType {
   vehicleStatus: VehicleStatus;
   vehicleName: string;
   setVehicleName: (name: string) => void;
+  isVehicleNameSet: boolean;
   distance: number | null;
   logs: LogMessage[];
   publish: (topic: string, message: string) => void;
@@ -35,6 +36,7 @@ export const MqttProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   const [brokerStatus, setBrokerStatus] = useState<BrokerStatus>('disconnected');
   const [vehicleStatus, setVehicleStatus] = useState<VehicleStatus>('offline');
   const [vehicleName, setVehicleNameState] = useState<string>('');
+  const [isVehicleNameSet, setIsVehicleNameSet] = useState(true);
   const [distance, setDistance] = useState<number | null>(null);
   const [logs, setLogs] = useState<LogMessage[]>([]);
   const vehicleStatusTimer = useRef<NodeJS.Timeout | null>(null);
@@ -52,6 +54,7 @@ export const MqttProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     if (/^[a-z]+([A-Z][a-z]*)*$/.test(newName) && !newName.includes('+') && !newName.includes('#')) {
       localStorage.setItem('robopilot_vehicle_name', newName);
       setVehicleNameState(newName);
+      setIsVehicleNameSet(true);
       addLog({ type: 'system', message: `Vehicle name changed to: ${newName}` });
       toast({
         title: "Name Updated",
@@ -69,7 +72,7 @@ export const MqttProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   const clearLogs = () => setLogs([]);
 
   const connectToBroker = useCallback((name: string) => {
-    if (!name) return;
+    if (!name || !isVehicleNameSet) return;
 
     setBrokerStatus('connecting');
     addLog({ type: 'system', message: `Connecting to ${BROKER_URL}...` });
@@ -132,32 +135,34 @@ export const MqttProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         setDistance(isNaN(distValue) ? null : distValue);
       }
     });
-  }, [addLog, brokerStatus, toast]);
+  }, [addLog, brokerStatus, toast, isVehicleNameSet]);
 
   useEffect(() => {
-    const storedName = localStorage.getItem('robopilot_vehicle_name') || generateVehicleName();
-    if (!localStorage.getItem('robopilot_vehicle_name')) {
-      localStorage.setItem('robopilot_vehicle_name', storedName);
-      addLog({ type: 'system', message: `Generated vehicle name: ${storedName}` });
+    const storedName = localStorage.getItem('robopilot_vehicle_name');
+    if (storedName) {
+      setVehicleNameState(storedName);
+      setIsVehicleNameSet(true);
+    } else {
+      setVehicleNameState(generateVehicleName());
+      setIsVehicleNameSet(false);
     }
-    setVehicleNameState(storedName);
-  }, [addLog]);
+  }, []);
 
   useEffect(() => {
     if (client) {
       client.end(true);
     }
-    if (vehicleName) {
+    if (vehicleName && isVehicleNameSet) {
       connectToBroker(vehicleName);
     }
     return () => {
       if(client) client.end(true);
     }
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [vehicleName]);
+  }, [vehicleName, isVehicleNameSet]);
   
   const publish = (topicSuffix: string, message: string) => {
-    if (client && client.connected && vehicleName) {
+    if (client && client.connected && vehicleName && isVehicleNameSet) {
       const topic = `bzh/iot/voiture/${vehicleName}/${topicSuffix}`;
       client.publish(topic, message, (err) => {
         if (err) {
@@ -169,7 +174,7 @@ export const MqttProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   };
 
   return (
-    <MqttContext.Provider value={{ brokerStatus, vehicleStatus, vehicleName, setVehicleName, distance, logs, publish, clearLogs }}>
+    <MqttContext.Provider value={{ brokerStatus, vehicleStatus, vehicleName, setVehicleName, isVehicleNameSet, distance, logs, publish, clearLogs }}>
       {children}
     </MqttContext.Provider>
   );
