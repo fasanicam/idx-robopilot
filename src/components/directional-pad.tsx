@@ -37,9 +37,9 @@ export const DirectionalPad = () => {
 
       <Button
         className="h-full w-full text-2xl"
-        onMouseDown={() => handleCommand('rotation antihoraire')}
+        onMouseDown={() => handleCommand('rotation_antihoraire')}
         onMouseUp={() => handleCommand('stop')}
-        onTouchStart={(e) => {e.preventDefault(); handleCommand('rotation antihoraire');}}
+        onTouchStart={(e) => {e.preventDefault(); handleCommand('rotation_antihoraire');}}
         onTouchEnd={(e) => {e.preventDefault(); handleCommand('stop');}}
       >
         <ArrowLeft size={48} />
@@ -53,9 +53,9 @@ export const DirectionalPad = () => {
       </Button>
       <Button
         className="h-full w-full text-2xl"
-        onMouseDown={() => handleCommand('rotation horaire')}
+        onMouseDown={() => handleCommand('rotation_horaire')}
         onMouseUp={() => handleCommand('stop')}
-        onTouchStart={(e) => {e.preventDefault(); handleCommand('rotation horaire');}}
+        onTouchStart={(e) => {e.preventDefault(); handleCommand('rotation_horaire');}}
         onTouchEnd={(e) => {e.preventDefault(); handleCommand('stop');}}
       >
         <ArrowRight size={48} />
