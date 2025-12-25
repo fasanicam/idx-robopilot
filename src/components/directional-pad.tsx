@@ -37,9 +37,9 @@ export const DirectionalPad = () => {
 
       <Button
         className="h-full w-full text-2xl"
-        onMouseDown={() => handleCommand('gauche')}
+        onMouseDown={() => handleCommand('tourner a gauche')}
         onMouseUp={() => handleCommand('stop')}
-        onTouchStart={(e) => {e.preventDefault(); handleCommand('gauche');}}
+        onTouchStart={(e) => {e.preventDefault(); handleCommand('tourner a gauche');}}
         onTouchEnd={(e) => {e.preventDefault(); handleCommand('stop');}}
       >
         <ArrowLeft size={48} />
@@ -53,9 +53,9 @@ export const DirectionalPad = () => {
       </Button>
       <Button
         className="h-full w-full text-2xl"
-        onMouseDown={() => handleCommand('droite')}
+        onMouseDown={() => handleCommand('tourner a droite')}
         onMouseUp={() => handleCommand('stop')}
-        onTouchStart={(e) => {e.preventDefault(); handleCommand('droite');}}
+        onTouchStart={(e) => {e.preventDefault(); handleCommand('tourner a droite');}}
         onTouchEnd={(e) => {e.preventDefault(); handleCommand('stop');}}
       >
         <ArrowRight size={48} />
